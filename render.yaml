@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: rbs-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.backend
+    # если Dockerfile лежит в корне; иначе поправь путь
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: rbs-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: rbs-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: rbs-db
+          property: password
+      # если у тебя есть профили:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+  - type: web
+    name: rbs-frontend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.frontend
+    # важно: фронтенд должен ходить на публичный URL бэка
+    # если тебе нужно прокинуть переменную на этап build,
+    # добавь её в Dockerfile как ARG/ENV
+    envVars:
+      - key: API_BASE_URL
+        value: https://rbs-backend.onrender.com
+
+databases:
+  - name: rbs-db
+    plan: free
