@@ -3,10 +3,11 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-
+// Используем переменную окружения или захардкоженный URL для production
+const API_URL = import.meta.env.VITE_API_URL || 'https://resourcebookingsystem-docker.onrender.com/api';
 
 const api = axios.create({
-  baseURL: '/api',  // Изменили с http://localhost:8080/api на /api
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,7 +33,6 @@ api.interceptors.response.use(
     } else if (error.response?.status === 403) {
       toast.error('Insufficient permissions');
     } else if (error.response?.data?.errors) {
-      // Обработка ошибок валидации
       const errors = error.response.data.errors;
       Object.values(errors).forEach((msg) => {
         toast.error(msg as string);
